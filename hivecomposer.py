@@ -37,7 +37,7 @@ storage_client = storage.Client()
 PROJECT_ID = "graphite-prism-381016"
 
 
-CLUSTER_NAME = "cluster-2480"
+CLUSTER_NAME = "cluster-dataproc-hive"
 
 REGION = "us-central1"
 
