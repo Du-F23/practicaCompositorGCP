@@ -32,7 +32,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 DAG_ID = "dataproc_hive"
 storage_client = storage.Client()
-PROJECT_ID = "modular-crawler-380522"
+PROJECT_ID = "graphite-prism-381016"
 
 
 CLUSTER_NAME = "cluster-dataproc-hive"
@@ -69,9 +69,28 @@ TIMEOUT = {"seconds": 1 * 24 * 60 * 60}
 HIVE_JOB = {
     "reference": {"project_id": PROJECT_ID},
     "placement": {"cluster_name": CLUSTER_NAME},
-    "hive_job": {"query_list": {"queries": ["SENTENCIA SQL"]}},
-
+    "hive_job": {"query_list": {"queries": ["SHOW DATABASES"]}},
 }
+
+HIVE_JOB_TWO = {
+    "reference": {"project_id": PROJECT_ID},
+    "placement": {"cluster_name": CLUSTER_NAME},
+    "hive_job": {"query_list": {"queries": ["CREATE DATABASE MIUSUARIO_TEST;"]}},
+}
+
+HIVE_JOB_TREE = {
+    "reference": {"project_id": PROJECT_ID},
+    "placement": {"cluster_name": CLUSTER_NAME},
+    "hive_job": {"query_list": {"queries": ["CREATE TABLE MIUSUARIO_TEST.PERSONA(ID STRING,NOMBRE STRING,TELEFONO STRING,CORREO STRING,FECHA_INGRESO STRING,EDAD INT,SALARIO DOUBLE,ID_EMPRESA STRING)ROW FORMAT DELIMITEDFIELDS TERMINATED BY '|'LINES TERMINATED BY '\n'STORED AS TEXTFILE;"]}},
+}
+
+HIVE_JOB_FOUR = {
+    "reference": {"project_id": PROJECT_ID},
+    "placement": {"cluster_name": CLUSTER_NAME},
+    "hive_job": {"query_list": {"queries": ["SHOW TABLES IN MIUSUARIO_TEST;"]}},
+}
+
+
 
 # [END how_to_cloud_dataproc_hive_config]
 
@@ -97,6 +116,15 @@ with models.DAG(
         hive_task = DataprocSubmitJobOperator(
         task_id="hive_task", job=HIVE_JOB, region=REGION, project_id=PROJECT_ID
         )
+        hive_task_two = DataprocSubmitJobOperator(
+        task_id="hive_create_database", job=HIVE_JOB_TWO, region=REGION, project_id=PROJECT_ID
+        )
+        hive_task_tree = DataprocSubmitJobOperator(
+        task_id="hive_create_table", job=HIVE_JOB_TREE, region=REGION, project_id=PROJECT_ID
+        )
+        hive_task_four = DataprocSubmitJobOperator(
+        task_id="hive_show_tables", job=HIVE_JOB_FOUR, region=REGION, project_id=PROJECT_ID
+        )
 
     # [START how_to_cloud_dataproc_delete_cluster_operator]
         delete_cluster = DataprocDeleteClusterOperator(
@@ -108,4 +136,4 @@ with models.DAG(
     # [END how_to_cloud_dataproc_delete_cluster_operator]
         delete_cluster.trigger_rule = TriggerRule.ALL_DONE
 
-        create_cluster >> hive_task >> delete_cluster
+        create_cluster >> hive_task >> hive_task_two >> hive_task_tree >> hive_task_four >> delete_cluster
