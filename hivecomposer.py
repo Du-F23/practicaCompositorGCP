@@ -54,11 +54,11 @@ CLUSTER_CONFIG = {
         "machine_type_uri": "n1-standard-4",
         "disk_config": {"boot_disk_type": "pd-standard", "boot_disk_size_gb": 1024},
     },
-    #"worker_config": {
-     #   "num_instances": 2,
-#        "machine_type_uri": "n1-standard-4",
- #       "disk_config": {"boot_disk_type": "pd-standard", "boot_disk_size_gb": 1024},
-    #},
+    "worker_config": {
+       "num_instances": 2,
+        "machine_type_uri": "n1-standard-4",
+        "disk_config": {"boot_disk_type": "pd-standard", "boot_disk_size_gb": 1024},
+    },
 }
 
 # [END how_to_cloud_dataproc_create_cluster]
@@ -70,7 +70,7 @@ TIMEOUT = {"seconds": 1 * 24 * 60 * 60}
 HIVE_JOB = {
     "reference": {"project_id": PROJECT_ID},
     "placement": {"cluster_name": CLUSTER_NAME},
-    "hive_job": {"query_list": {"queries": ["SHOW DATABASES"]}},
+    "hive_job": {"query_list": {"queries": ["SHOW DATABASES;"]}},
 }
 
 HIVE_JOB_TWO = {
